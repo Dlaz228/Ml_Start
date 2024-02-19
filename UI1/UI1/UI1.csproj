@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ConfigurationProject\ConfigurationProject\ConfigurationProject.csproj" />
+    <ProjectReference Include="..\..\ConfigurationLibrary\ConfigurationLibrary.csproj" />
     <ProjectReference Include="..\..\MakeStory\MakeStory\StoryMaker.csproj" />
 	<ProjectReference Include="..\..\Ml_Start\NumberGenerator.csproj" />
   </ItemGroup>

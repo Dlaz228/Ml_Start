@@ -1,11 +1,5 @@
-﻿using Ml_Start.GenerateSomeNumber;
-using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ml_Start.ConfigurationProject;
+﻿using Serilog;
+using Ml_Start.ConfigurationLibrary;
 
 namespace Ml_Start.GenerateSomeNumber;
 
@@ -17,10 +11,12 @@ public class NumberCreator
         int L;
 
         ArrayMethods arrayMethods = new();
-        Tools configurationMethods = new();
+        CongfigTools congfigTools = new();
+
+        LoggingTools.CreateLogger();
 
         //otherMethods.CreateConfigFile();
-        configurationMethods.CreateConfigXmlFile();
+        congfigTools.CreateConfigXmlFile();
 
         int[] k = new int[8];
         arrayMethods.FillOddNums(k, 5);
@@ -31,7 +27,7 @@ public class NumberCreator
         double[,] k2 = new double[8, 13];
         arrayMethods.FillArray(k, x, k2);
 
-        configurationMethods.GetVariables(out N, out L);
+        congfigTools.GetVariables(out N, out L);
 
         double element = Math.Round(arrayMethods.GetAverageValue(L, k2) + arrayMethods.GetMinValue(N, k2), 4);
 

@@ -1,19 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Ml_Start.ConfigurationLibrary;
+using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Microsoft.IdentityModel.Tokens;
-using Ml_Start.ConfigurationProject;
 
 namespace UI1
 {
@@ -29,15 +16,21 @@ namespace UI1
 
         public void Change_Delay_Click(object sender, RoutedEventArgs e)
         {
-            //ConfigurationMethods configurationMethods = new();
+            if (Regex.IsMatch(textBoxDelay.Text, @"^\d+$"))
+            {
+                CongfigTools.ChangeDelay(textBoxDelay.Text);
 
-            //configurationMethods.ChangeDelay(textBoxDelay.Text);
+                MessageBox.Show("Успешно!");
 
-            Tools.ChangeDelay(textBoxDelay.Text);
-
-            MessageBox.Show("Успешно!");
-
-            Close();
+                Close();
+            }
+            
+            else
+            {
+                textBoxDelay.Text = "";
+                MessageBox.Show("Ты ввёл не число!");
+            }
+            
         }
 
         

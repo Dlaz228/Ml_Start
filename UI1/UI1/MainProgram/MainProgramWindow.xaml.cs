@@ -1,20 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Ml_Start.MakeStory;
+﻿using Ml_Start.ConfigurationLibrary;
 using Ml_Start.GenerateSomeNumber;
-using Ml_Start.ConfigurationProject;
-using System.Windows.Navigation;
+using Ml_Start.MakeStory;
+using System.Windows;
 
 
 namespace UI1
@@ -37,7 +24,7 @@ namespace UI1
         {
             Story story = new();
             NumberCreator someNumber = new();
-            Tools tools = new();
+            CongfigTools configTools = new();
 
             while (true)
             {
@@ -48,7 +35,7 @@ namespace UI1
 
                     storyText.Text = line;
 
-                    int delay = int.Parse(tools.GetVariableFromXml("Delay"));
+                    int delay = int.Parse(configTools.GetVariableFromXml("Delay"));
 
                     await Task.Delay(delay);
 

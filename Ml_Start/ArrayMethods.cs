@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ml_Start.ConfigurationProject;
-using Serilog;
+﻿using Ml_Start.ConfigurationLibrary;
+
 
 namespace Ml_Start.GenerateSomeNumber;
 
@@ -20,7 +15,6 @@ public class ArrayMethods
 
             n += 2;
         }
-
     }
 
     public void FillRandomDoubleNums(double[] array, double minValue, double maxValue)
@@ -31,7 +25,8 @@ public class ArrayMethods
 
             array[i] = Math.Round(minValue + random.NextDouble() * (maxValue - minValue), 13);
 
-            Log.Information($"Используется неявное приведение типа int в double, и значение записывается в элемент x[{i}]");
+            //Log.Information($"Используется неявное приведение типа int в double, и значение записывается в элемент x[{i}]");
+            LoggingTools.WriteLog("Information", $"Используется неявное приведение типа int в double, и значение записывается в элемент x[{i}]");
         }
     }
 
@@ -49,7 +44,8 @@ public class ArrayMethods
 
                     if (double.IsNaN(k2[i, j]))
                     {
-                        Log.Warning($"В результате вычислений элементу k2[{i}, {j}] было присвоено NaN");
+                        //Log.Warning($"В результате вычислений элементу k2[{i}, {j}] было присвоено NaN");
+                        LoggingTools.WriteLog("Warning", $"В результате вычислений элементу k2[{i}, {j}] было присвоено NaN");
 
                     }
                 }
@@ -61,7 +57,8 @@ public class ArrayMethods
 
                     if (double.IsNaN(k2[i, j]))
                     {
-                        Log.Warning($"В результате вычислений элементу k2[{i}, {j}] было присвоено NaN");
+                        //Log.Warning($"В результате вычислений элементу k2[{i}, {j}] было присвоено NaN");
+                        LoggingTools.WriteLog("Warning", $"В результате вычислений элементу k2[{i}, {j}] было присвоено NaN");
                     }
                 }
 
@@ -71,7 +68,8 @@ public class ArrayMethods
 
                     if (double.IsNaN(k2[i, j]))
                     {
-                        Log.Warning($"В результате вычислений элементу k2[{i}, {j}] было присвоено NaN");
+                        //Log.Warning($"В результате вычислений элементу k2[{i}, {j}] было присвоено NaN");
+                        LoggingTools.WriteLog("Warning", $"В результате вычислений элементу k2[{i}, {j}] было присвоено NaN");
                     }
                 }
             }

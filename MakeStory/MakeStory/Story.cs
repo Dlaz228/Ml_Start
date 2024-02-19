@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Ml_Start.MakeStory.Classes;
+﻿using static Ml_Start.MakeStory.Classes;
 
 namespace Ml_Start.MakeStory
 {

@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 using UI1.TestDB;
-using Ml_Start.ConfigurationProject;
+using Ml_Start.ConfigurationLibrary;
 
 namespace UI1
 {
@@ -25,7 +25,7 @@ namespace UI1
             var context = new TestBdContext();
 
             var user = context.Users.
-                       Where(user => user.Login == loginUser && user.Password == Tools.Hash(passwordUser)).
+                       Where(user => user.Login == loginUser && user.Password == Hasher.Hash(passwordUser)).
                        FirstOrDefault();
 
             if (user != null)
