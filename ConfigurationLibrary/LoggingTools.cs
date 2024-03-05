@@ -23,7 +23,7 @@ public class LoggingTools
             loggerConfig
                 .WriteTo.Logger(c =>
                     c.Filter.ByIncludingOnly(e => e.Level == tmp.Key)
-                        .WriteTo.File(tmp.Value));
+                        .WriteTo.File($"Logs/" + tmp.Value));
         }
 
         Log.Logger = loggerConfig.CreateLogger();

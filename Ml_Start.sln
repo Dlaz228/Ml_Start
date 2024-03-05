@@ -3,13 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NumberGenerator", "Ml_Start\NumberGenerator.csproj", "{056F29B3-7EB9-40B1-B05A-7E923C15C6FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NumberGeneratorLibrary", "Ml_Start\NumberGeneratorLibrary.csproj", "{056F29B3-7EB9-40B1-B05A-7E923C15C6FA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoryMaker", "MakeStory\MakeStory\StoryMaker.csproj", "{D359052A-AE6C-41D8-B31D-CBD7DCF60446}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoryMakerLibrary", "MakeStory\MakeStory\StoryMakerLibrary.csproj", "{D359052A-AE6C-41D8-B31D-CBD7DCF60446}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigurationLibrary", "ConfigurationLibrary\ConfigurationLibrary.csproj", "{9F9C7B25-5F7B-4A1B-8B65-BD1B51604F2C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransferObjectLibrary", "TransferObjectLibrary\TransferObjectLibrary.csproj", "{980C6F6E-C71C-4B3C-9D98-6A3FE2230D7C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{7722B9B2-C601-4DF3-98A2-106C68D27715}"
 EndProject
@@ -33,10 +31,6 @@ Global
 		{9F9C7B25-5F7B-4A1B-8B65-BD1B51604F2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F9C7B25-5F7B-4A1B-8B65-BD1B51604F2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F9C7B25-5F7B-4A1B-8B65-BD1B51604F2C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{980C6F6E-C71C-4B3C-9D98-6A3FE2230D7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{980C6F6E-C71C-4B3C-9D98-6A3FE2230D7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{980C6F6E-C71C-4B3C-9D98-6A3FE2230D7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{980C6F6E-C71C-4B3C-9D98-6A3FE2230D7C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7722B9B2-C601-4DF3-98A2-106C68D27715}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7722B9B2-C601-4DF3-98A2-106C68D27715}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7722B9B2-C601-4DF3-98A2-106C68D27715}.Release|Any CPU.ActiveCfg = Release|Any CPU

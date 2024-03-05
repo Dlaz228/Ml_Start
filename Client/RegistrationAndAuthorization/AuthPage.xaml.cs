@@ -53,7 +53,7 @@ namespace Client
                 }
                 else
                 {
-                    MessageBox.Show($"{isAuth}");
+                    MessageBox.Show($"Пользователь под этим именем уже авторизован");
                 }
             }
             catch (Exception ex)

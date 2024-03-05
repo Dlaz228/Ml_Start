@@ -23,7 +23,6 @@ internal class Program
             Story story = new();
             NumberCreator someNumber = new();
             CongfigTools configTools = new();
-            Console.WriteLine($"Пользователь {name} подключился");
             while (true)
             {
                 string ans = reader.ReadLine();
@@ -40,10 +39,17 @@ internal class Program
                 {
                     string login = reader.ReadLine();
                     string password = reader.ReadLine();
-                    bool isAuth = DBAuthorization.UserAuthorization(login, password, users, ref name);
-                    writer.WriteLine(isAuth);
-
-                    
+                    if (!users.Contains(login))
+                    {
+                        users.Add(login);
+                        bool isAuth = DBAuthorization.UserAuthorization(login, password, users, ref name);
+                        writer.WriteLine(isAuth);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Пользователь {login} уже авторизован");
+                        writer.WriteLine(false);
+                    }
                 }
                 else if (ans.Equals("Story"))
                 {

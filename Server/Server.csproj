@@ -25,8 +25,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ConfigurationLibrary\ConfigurationLibrary.csproj" />
-    <ProjectReference Include="..\MakeStory\MakeStory\StoryMaker.csproj" />
-    <ProjectReference Include="..\Ml_Start\NumberGenerator.csproj" />
+    <ProjectReference Include="..\MakeStory\MakeStory\StoryMakerLibrary.csproj" />
+    <ProjectReference Include="..\Ml_Start\NumberGeneratorLibrary.csproj" />
   </ItemGroup>
 
 </Project>
