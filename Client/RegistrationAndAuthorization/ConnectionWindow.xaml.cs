@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using System.Windows.Navigation;
 using MaterialDesignThemes.Wpf;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Ml_Start.ConfigurationLibrary;
 
 namespace Client.RegistrationAndAuthorization
 {
@@ -29,21 +30,31 @@ namespace Client.RegistrationAndAuthorization
         public ConnectionWindow()
         {
             InitializeComponent();
+            LoggingTools.CreateLogger();
+            CongfigTools.CreateClientConfigXmlFile();
         }
 
         private void Button_Connect_Click(object sender, RoutedEventArgs e)
         {
-            //Socket socket = new();
-            if (Validate(textBoxIp.Text, textBoxPort.Text))
+            try
             {
-                IPAddress ip_address = IPAddress.Parse(textBoxIp.Text); //default
-                int port = int.Parse(textBoxPort.Text);
-                client = new TcpClient(ip_address.ToString(), port);
+                if (Validate(textBoxIp.Text, textBoxPort.Text))
+                {
+                    IPAddress ip_address = IPAddress.Parse(textBoxIp.Text); //default
+                    int port = int.Parse(textBoxPort.Text);
+                    client = new TcpClient(ip_address.ToString(), port);
 
-                GreetingWindow greetingWindow = new GreetingWindow(this);
-                greetingWindow.Show();
-                Close();
+                    GreetingWindow greetingWindow = new GreetingWindow(this);
+                    greetingWindow.Show();
+                    Close();
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message); 
+                LoggingTools.WriteLog("Error", ex.Message);
+            }
+            
             //App.Current.Resources["client"] = client;
             //Client.client = client;
         }

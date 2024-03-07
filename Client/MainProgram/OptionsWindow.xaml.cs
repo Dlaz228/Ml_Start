@@ -15,21 +15,21 @@ namespace Client
 
         public void Change_Delay_Click(object sender, RoutedEventArgs e)
         {
-            //if (Regex.IsMatch(textBoxDelay.Text, @"^\d+$"))
-            //{
-            //    CongfigTools.ChangeDelay(textBoxDelay.Text);
+            if (Regex.IsMatch(textBoxDelay.Text, @"^\d+$"))
+            {
+                //Delay = textBoxDelay.Text;
 
-            //    MessageBox.Show("Успешно!");
+                MessageBox.Show("Успешно!");
 
-            //    Close();
-            //}
-            
-            //else
-            //{
-            //    textBoxDelay.Text = "";
-            //    MessageBox.Show("Ты ввёл не число!");
-            //}
-            
+                Close();
+            }
+
+            else
+            {
+                textBoxDelay.Text = "";
+                MessageBox.Show("Ты ввёл не число!");
+            }
+
         }
 
         

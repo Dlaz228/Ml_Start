@@ -53,6 +53,7 @@ namespace Client
 
         public void CloseWindow()
         {
+            Client.Close();
             Close();
         }
 

@@ -4,6 +4,7 @@ using System.Windows.Navigation;
 using System.IO;
 using System.Net.Sockets;
 using Client.RegistrationAndAuthorization;
+using Ml_Start.ConfigurationLibrary;
 
 namespace Client
 {
@@ -26,11 +27,11 @@ namespace Client
         {
             //var client = Client.client;
 
-            string login = textBoxLogin.Text;
-            string password = textBoxPassword.Password;
-            string password_2 = textBoxPassword_2.Password;
+            string login = textBoxLogin.Text.Trim();
+            string password = textBoxPassword.Password.Trim();
+            string password_2 = textBoxPassword_2.Password.Trim();
 
-            if (Validate(login, "login") || Validate(password, "password", password_2))
+            if (Validate(login, "login") && Validate(password, "password", password_2))
             {
                 try
                 {
@@ -46,6 +47,7 @@ namespace Client
                 {
                     tbConnect.Text = "Соединение потеряно";
                     MessageBoxResult res = MessageBox.Show("Вернуться на страницу подключения?");
+                    LoggingTools.WriteLog("Error", ex.Message);
                     if (res == MessageBoxResult.OK)
                     {
                         ConnectionWindow connectionWindow = new ConnectionWindow();
@@ -76,27 +78,27 @@ namespace Client
                     }
                     else if (variableValue.Length < 5)
                     {
-                        MessageBox.Show("Длина не может быть меньше 5 символов");
+                        MessageBox.Show("Длина логина не может быть меньше 5 символов");
                         return false;
                     }
                     else if (variableValue.Length > 50)
                     {
-                        MessageBox.Show("Длина не может быть больше 50 символов");
+                        MessageBox.Show("Длина логина не может быть больше 50 символов");
                         return false;
                     }
                     else if (!variableValue.Any(Char.IsLetter))
                     {
-                        MessageBox.Show("Необходима хотя бы одна буква");
+                        MessageBox.Show("Необходима хотя бы одна буква для логина");
                         return false;
                     }
                     else if (!variableValue.Any(Char.IsUpper))
                     {
-                        MessageBox.Show("Необходима хотя бы одна заглавная буква");
+                        MessageBox.Show("Необходима хотя бы одна заглавная буква для логина");
                         return false;
                     }
                     else if (!variableValue.Any(Char.IsLower))
                     {
-                        MessageBox.Show("Необходима хотя бы одна строчная буква");
+                        MessageBox.Show("Необходима хотя бы одна строчная буква для логина");
                         return false;
                     }
                     return true;
@@ -109,15 +111,15 @@ namespace Client
                     }
                     else if (variableValue.Length < 5)
                     {
-                        MessageBox.Show("Длина не может быть меньше 5 символов");
+                        MessageBox.Show("Длина пароля не может быть меньше 5 символов");
                         return false;
                     }
                     else if (variableValue.Length > 50)
                     {
-                        MessageBox.Show("Длина не может быть больше 50 символов");
+                        MessageBox.Show("Длина пароля не может быть больше 50 символов");
                         return false;
                     }
-                    else if (variable != password2)
+                    else if (variableValue != password2)
                     {
                         MessageBox.Show("Пароль и повторный пароль не совпадают");
                         return false;

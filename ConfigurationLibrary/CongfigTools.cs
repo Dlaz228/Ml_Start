@@ -5,7 +5,27 @@ namespace Ml_Start.ConfigurationLibrary;
 
 public class CongfigTools
 {
-    public void CreateConfigXmlFile()
+    public void CreateServerConfigXmlFile()
+    {
+        try
+        {
+            XDocument doc = XDocument.Load("config.xml");
+        }
+        catch
+        {
+            XDocument xdoc = new XDocument(
+            new XElement("ConfigSettings",
+                new XElement("ConnectionString", "\"Server=(localdb)\\\\MSSQLLocalDB;Database=MlStartDB;Trusted_Connection=True;TrustServerCertificate=True\"")
+                )
+            );
+
+            xdoc.Save("config.xml");
+
+            Log.Information("Конфигурационный файл создан!");
+        }
+    }
+
+    public static void CreateClientConfigXmlFile()
     {
         try
         {
@@ -17,7 +37,7 @@ public class CongfigTools
             new XElement("ConfigSettings",
                 new XElement("FirstName", "Даниил"),
                 new XElement("LastName", "Лазукин"),
-                new XElement("Delay", "1000")
+                new XElement("Delay", "5000")
                 )
             );
 
@@ -27,7 +47,7 @@ public class CongfigTools
         }
     }
 
-    public void GetVariables(out int N, out int L)
+    public static void GetVariables(out int N, out int L)
     {
         try
         {
@@ -43,7 +63,7 @@ public class CongfigTools
         }
     }
 
-    public string GetVariableFromXml(string name)
+    public static string GetVariableFromXml(string name)
     {
         XDocument xDoc = XDocument.Load("config.xml");
 

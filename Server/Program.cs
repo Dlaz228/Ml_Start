@@ -5,18 +5,19 @@ using Ml_Start.ConfigurationLibrary;
 using Ml_Start.GenerateSomeNumber;
 using Ml_Start.MakeStory;
 using Server;
+using Microsoft.IdentityModel.Tokens;
 
 internal class Program
 {
-    static List<string> users = new List<string>();
+    static List<string> users = new();
 
     private async static void ProcessClientRequests(object argument)
     {
         TcpClient client = (TcpClient)argument;
         try
         {
-            StreamReader reader = new StreamReader(client.GetStream());
-            StreamWriter writer = new StreamWriter(client.GetStream());
+            StreamReader reader = new(client.GetStream());
+            StreamWriter writer = new(client.GetStream());
             writer.AutoFlush = true;
             string s = String.Empty;
             string name = "unknown";
@@ -39,28 +40,26 @@ internal class Program
                 {
                     string login = reader.ReadLine();
                     string password = reader.ReadLine();
-                    if (!users.Contains(login))
+                    bool isAuth = DBAuthorization.UserAuthorization(login, password, users, ref name);
+                    if (isAuth && !users.Contains(login))
                     {
                         users.Add(login);
-                        bool isAuth = DBAuthorization.UserAuthorization(login, password, users, ref name);
-                        writer.WriteLine(isAuth);
                     }
-                    else
-                    {
-                        Console.WriteLine($"Пользователь {login} уже авторизован");
-                        writer.WriteLine(false);
-                    }
+                    writer.WriteLine(isAuth);
+                    
                 }
                 else if (ans.Equals("Story"))
                 {
-
-                    foreach (string line in story.GetStory(someNumber.GetNumber()))
+                    int N = int.Parse(reader.ReadLine());
+                    int L = int.Parse(reader.ReadLine());
+                    foreach (string line in story.GetStory(someNumber.GetNumber(N, L)))
                     {
                         Console.WriteLine($"From {name} -> " + line);
                         writer.WriteLine(line);
                         //writer.Flush();
 
-                        int delay = int.Parse(configTools.GetVariableFromXml("Delay"));
+                        int delay = int.Parse(reader.ReadLine());
+                        //Console.WriteLine(delay);
 
                         await Task.Delay(delay);
 
@@ -69,6 +68,10 @@ internal class Program
 
                     writer.WriteLine("stop");
                     break;
+                }
+                else
+                {
+                    LoggingTools.WriteLog("Warning", ans);
                 }
 
             }
@@ -90,53 +93,83 @@ internal class Program
         }
     }
 
-    private static void ShowServerNetworkConfig()
-    {
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
-        foreach (NetworkInterface adapter in adapters)
-        {
-            Console.WriteLine(adapter.Description);
-            Console.WriteLine("\tAdapter Name: " + adapter.Name);
-            Console.WriteLine("\tMAC Address: " + adapter.GetPhysicalAddress());
-            IPInterfaceProperties ip_properties = adapter.GetIPProperties();
-            UnicastIPAddressInformationCollection addresses = ip_properties.UnicastAddresses;
-            foreach (UnicastIPAddressInformation address in addresses)
-            {
-                Console.WriteLine("\tIP Address: " + address.Address);
-            }
-        }
-        Console.ForegroundColor = ConsoleColor.White;
-    }
-
     public static void Main()
     {
-        
         TcpListener listener = null;
+        IPAddress defaultIpAddress = IPAddress.Parse("127.0.0.1");
+        int defaultPort = 8080;
         try
         {
+            LoggingTools.CreateLogger();
+
+            GetCustomIpAndPort(ref defaultIpAddress, ref defaultPort);
+
+            Console.Clear();
             //ShowServerNetworkConfig();
-            listener = new TcpListener(IPAddress.Any, 8080);
+            listener = new(defaultIpAddress, defaultPort);
             listener.Start();
             Console.WriteLine("MultiIPEchoServer started...");
+            LoggingTools.WriteLog("Information", "Server has started");
             Console.WriteLine("Waiting for incoming client connections...");
             while (true)
             {
                 TcpClient client = listener.AcceptTcpClient();
                 Console.WriteLine("Accepted new client connection...");
-                Thread t = new Thread(ProcessClientRequests);
+                LoggingTools.WriteLog("Information", "Accepted new client connection...");
+                Thread t = new(ProcessClientRequests);
                 t.Start(client);
             }
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            Console.WriteLine("Произошла ошибка");
+            LoggingTools.WriteLog("Error", e.Message);
         }
         finally
         {
             if (listener != null)
             {
                 listener.Stop();
+                LoggingTools.WriteLog("Information", "Сервер закрыт");
+            }
+        }
+    }
+
+    private static void GetCustomIpAndPort(ref IPAddress ipAddress, ref int port)
+    {
+        string ans = "";
+
+        while (!ans.Equals("Y") && !ans.Equals("N"))
+        {
+            Console.Write("Хотите использовать свой ip и port для сервера? Y/N: ");
+            ans = Console.ReadLine().Trim().ToUpper();
+        }
+
+        if (ans.Equals("Y"))
+        {
+            while (true)
+            {
+                try
+                {
+                    Console.Write("Введите IP-адресс: ");
+                    ipAddress = IPAddress.Parse(Console.ReadLine().Trim());
+                    Console.Write("Введите порт: ");
+                    port = int.Parse(Console.ReadLine().Trim());
+                    break;
+                }
+                catch (SocketException)
+                {
+                    Console.WriteLine("Недопустимый IP-адрес");
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine("Недопустимый порт");
+                }
+                finally
+                {
+                    Console.WriteLine();
+                    Console.WriteLine();
+                }
             }
         }
     }

@@ -21,12 +21,19 @@
                 ShadowDepth="0" />
             </Border.Effect>
             <StackPanel>
-                <TextBlock x:Name="tbConnect" 
-                           Text="Состояние подключения: подключено" 
-                           TextAlignment="Left" 
-                           FontSize="11"
-                           FontWeight="Bold" 
-                           Margin="0, 0, 0, 20"/>
+                <Grid>
+                    <Image Source="/Images/settings.png"
+                           Width="30" 
+                           HorizontalAlignment="Right"
+                           MouseDown="Image_Page_Options_Click"
+                           Cursor="Hand"/>
+                    <TextBlock x:Name="tbConnect" 
+                               Text="Состояние подключения: подключено" 
+                               TextAlignment="Left" 
+                               FontSize="11"
+                               FontWeight="Bold" 
+                               Margin="0, 0, 0, 20"/>
+                </Grid>
                 <TextBlock Text="Здарова" 
                            TextAlignment="Center" 
                            FontSize="30"
@@ -39,7 +46,7 @@
                            FontSize="20"
                            FontWeight="Bold" 
                            Margin="0, 0, 0, 20"/>
-                <Button Content="Начать историю"
+                <Button x:Name="btStartStory" Content="Начать историю"
                         Click="Start_Story_Click"
                         Margin="0, 20, 0, 0"
                         Style="{StaticResource MaterialDesignOutlinedLightButton}"/>

@@ -1,5 +1,6 @@
 ﻿using Client.RegistrationAndAuthorization;
 using MaterialDesignThemes.Wpf;
+using Ml_Start.ConfigurationLibrary;
 using System.Data;
 using System.IO;
 using System.Net.Sockets;
@@ -60,6 +61,7 @@ namespace Client
             {
                 tbConnect.Text = "Соединение потеряно";
                 MessageBoxResult res = MessageBox.Show("Вернуться на страницу подключения?");
+                LoggingTools.WriteLog("Error", ex.Message);
                 if (res == MessageBoxResult.OK)
                 {
                     ConnectionWindow connectionWindow = new ConnectionWindow();

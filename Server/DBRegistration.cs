@@ -15,16 +15,22 @@ namespace Server
         {
             //Console.WriteLine(login);
             //Console.WriteLine(password);
+            try
+            {
+                var context = new MlStartDbContext();
 
-            var context = new MlStartDbContext();
+                context.Add(new User { Login = login, Password = Hasher.Hash(password) });
 
-            context.Add(new User { Login = login, Password = Hasher.Hash(password) });
+                context.SaveChanges();
 
-            context.SaveChanges();
-
-            Console.WriteLine($"The {login} has been registered");
+                Console.WriteLine($"Пользователь {login} был зарегестрирован");
+                LoggingTools.WriteLog("Information", $"Пользователь {login} был зарегестрирован");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Ошибка регистрации");
+                LoggingTools.WriteLog("Warning", e.Message);
+            }
         }
-
-        
     }
 }

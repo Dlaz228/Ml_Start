@@ -26,7 +26,7 @@ public class ArrayMethods
             array[i] = Math.Round(minValue + random.NextDouble() * (maxValue - minValue), 13);
 
             //Log.Information($"Используется неявное приведение типа int в double, и значение записывается в элемент x[{i}]");
-            LoggingTools.WriteLog("Information", $"Используется неявное приведение типа int в double, и значение записывается в элемент x[{i}]");
+            //LoggingTools.WriteLog("Information", $"Используется неявное приведение типа int в double, и значение записывается в элемент x[{i}]");
         }
     }
 
