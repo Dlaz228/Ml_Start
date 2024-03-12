@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace Client
@@ -11,13 +12,14 @@ namespace Client
         public OptionsWindow()
         {
             InitializeComponent();
+            
         }
 
         public void Change_Delay_Click(object sender, RoutedEventArgs e)
         {
             if (Regex.IsMatch(textBoxDelay.Text, @"^\d+$"))
             {
-                //Delay = textBoxDelay.Text;
+                App.Current.Resources["Delay"] = textBoxDelay.Text;
 
                 MessageBox.Show("Успешно!");
 

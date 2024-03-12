@@ -10,7 +10,7 @@ namespace Server
 {
     internal class DBAuthorization
     {
-        public static bool UserAuthorization(string login, string password, List<string> users, ref string name)
+        public static string UserAuthorization(string login, string password, List<string> users, ref string name)
         {
             try
             {
@@ -23,28 +23,28 @@ namespace Server
                 if (user != null && users.Contains(login))
                 {
                     Console.WriteLine($"Пользователь {login} уже авторизован");
-                    return false;
+                    return "taken";
                 }
-                else if (user != null)
+                if (user != null)
                 {
                     name = login;
-                    users.Add(name);
+                    //users.Add(name);
                     Console.WriteLine($"Пользователь {login} авторизовался");
                     LoggingTools.WriteLog("Information", $"Пользователь {login} авторизовался");
-                    return true;
+                    return "true";
                 }
                 else
                 {
                     Console.WriteLine("Не удалось найти пользователя");
                     LoggingTools.WriteLog("Information", "Не удалось найти пользователя");
-                    return false;
+                    return "false";
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Ошибка авторизации");
                 LoggingTools.WriteLog("Warning", e.Message);
-                return false;
+                return "false";
             }
             
         }

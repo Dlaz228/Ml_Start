@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Closing="Window_Closing"
         Title="Тут история" Height="550" Width="700">
     <Grid Background="#ffdadada">
         <Border MinWidth="250" 

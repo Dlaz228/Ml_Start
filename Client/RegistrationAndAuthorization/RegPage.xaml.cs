@@ -46,7 +46,7 @@ namespace Client
                 catch (Exception ex)
                 {
                     tbConnect.Text = "Соединение потеряно";
-                    MessageBoxResult res = MessageBox.Show("Вернуться на страницу подключения?");
+                    MessageBoxResult res = MessageBox.Show("Произошла ошибка!\nВернуться на страницу подключения?");
                     LoggingTools.WriteLog("Error", ex.Message);
                     if (res == MessageBoxResult.OK)
                     {

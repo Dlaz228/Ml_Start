@@ -5,7 +5,7 @@ namespace Ml_Start.ConfigurationLibrary;
 
 public class CongfigTools
 {
-    public void CreateServerConfigXmlFile()
+    public static void CreateServerConfigXmlFile()
     {
         try
         {
@@ -15,7 +15,7 @@ public class CongfigTools
         {
             XDocument xdoc = new XDocument(
             new XElement("ConfigSettings",
-                new XElement("ConnectionString", "\"Server=(localdb)\\\\MSSQLLocalDB;Database=MlStartDB;Trusted_Connection=True;TrustServerCertificate=True\"")
+                new XElement("ConnectionString", "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MlStartDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False")
                 )
             );
 

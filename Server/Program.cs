@@ -6,6 +6,8 @@ using Ml_Start.GenerateSomeNumber;
 using Ml_Start.MakeStory;
 using Server;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Data.SqlClient;
+using Server.MlStartDB;
 
 internal class Program
 {
@@ -14,16 +16,21 @@ internal class Program
     private async static void ProcessClientRequests(object argument)
     {
         TcpClient client = (TcpClient)argument;
+        string name = "unknown";
+
         try
         {
             StreamReader reader = new(client.GetStream());
             StreamWriter writer = new(client.GetStream());
             writer.AutoFlush = true;
-            string s = String.Empty;
-            string name = "unknown";
+
+            //string s = String.Empty;
+            //string name = "unknown";
+
             Story story = new();
             NumberCreator someNumber = new();
             CongfigTools configTools = new();
+
             while (true)
             {
                 string ans = reader.ReadLine();
@@ -40,49 +47,78 @@ internal class Program
                 {
                     string login = reader.ReadLine();
                     string password = reader.ReadLine();
-                    bool isAuth = DBAuthorization.UserAuthorization(login, password, users, ref name);
-                    if (isAuth && !users.Contains(login))
+                    string isAuth = DBAuthorization.UserAuthorization(login, password, users, ref name);
+
+                    if (isAuth.Equals("true") && !users.Contains(login))
                     {
                         users.Add(login);
                     }
+
                     writer.WriteLine(isAuth);
-                    
                 }
                 else if (ans.Equals("Story"))
                 {
-                    int N = int.Parse(reader.ReadLine());
-                    int L = int.Parse(reader.ReadLine());
-                    foreach (string line in story.GetStory(someNumber.GetNumber(N, L)))
+                    while (!ans.Equals("close"))
                     {
-                        Console.WriteLine($"From {name} -> " + line);
-                        writer.WriteLine(line);
-                        //writer.Flush();
+                        int N = int.Parse(reader.ReadLine());
+                        int L = int.Parse(reader.ReadLine());
 
-                        int delay = int.Parse(reader.ReadLine());
-                        //Console.WriteLine(delay);
+                        foreach (string line in story.GetStory(someNumber.GetNumber(N, L)))
+                        {
+                            Console.WriteLine($"From {name} -> " + line);
+                            writer.WriteLine(line);
+                            //writer.Flush();
 
-                        await Task.Delay(delay);
+                            int delay = int.Parse(reader.ReadLine());
+                            //Console.WriteLine(delay);
 
-                        //Thread.Sleep(int.Parse(Tools.GetVariableFromXml("Delay")));
+                            await Task.Delay(delay);
+
+                            //Thread.Sleep(int.Parse(Tools.GetVariableFromXml("Delay")));
+                        }
+
+                        writer.WriteLine("stop");
+                        ans = reader.ReadLine();
+
+                        if (ans.Equals("Close"))
+                        {
+                            users.Remove(name);
+
+                            reader.Close();
+                            writer.Close();
+                            client.Close();
+                            Console.WriteLine($"Client {name} connection closed!");
+                        }
+
+                        //Console.WriteLine(ans);
+                        //break;
                     }
 
-                    writer.WriteLine("stop");
                     break;
                 }
-                else
+                else if (ans.Equals("Close"))
                 {
-                    LoggingTools.WriteLog("Warning", ans);
+                    users.Remove(name);
+
+                    reader.Close();
+                    writer.Close();
+                    client.Close();
+                    Console.WriteLine($"Client {name} connection closed!");
+                    break;
                 }
+                //else
+                //{
+                //    LoggingTools.WriteLog("Warning", ans);
+                //}
 
             }
-            reader.Close();
-            //writer.Close();
-            client.Close();
-            Console.WriteLine("Client connection closed!");
+            
         }
         catch (IOException)
         {
-            Console.WriteLine("Problem with client communication. Exiting thread.");
+            users.Remove(name);
+
+            Console.WriteLine($"Problem with client {name} communication. Exiting thread.");
         }
         finally
         {
@@ -96,10 +132,21 @@ internal class Program
     public static void Main()
     {
         TcpListener listener = null;
-        IPAddress defaultIpAddress = IPAddress.Parse("127.0.0.1");
-        int defaultPort = 8080;
+        IPAddress defaultIpAddress = IPAddress.Parse("127.0.0.1"); //"127.0.0.1"
+        int defaultPort = 8080; 
+
+        CongfigTools.CreateServerConfigXmlFile();
+
         try
         {
+            var context = new MlStartDbContext();
+            
+            if (context.Database.EnsureCreated())
+            {
+                Console.WriteLine("База данных создана");
+                LoggingTools.WriteLog("Debug", "База данных создана");
+            }
+
             LoggingTools.CreateLogger();
 
             GetCustomIpAndPort(ref defaultIpAddress, ref defaultPort);
@@ -109,6 +156,7 @@ internal class Program
             listener = new(defaultIpAddress, defaultPort);
             listener.Start();
             Console.WriteLine("MultiIPEchoServer started...");
+            Console.WriteLine($"IP => {defaultIpAddress}; Port => {defaultPort}");
             LoggingTools.WriteLog("Information", "Server has started");
             Console.WriteLine("Waiting for incoming client connections...");
             while (true)
@@ -120,10 +168,10 @@ internal class Program
                 t.Start(client);
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
             Console.WriteLine("Произошла ошибка");
-            LoggingTools.WriteLog("Error", e.Message);
+            LoggingTools.WriteLog("Error", ex.Message + ex.StackTrace);
         }
         finally
         {
@@ -155,6 +203,15 @@ internal class Program
                     ipAddress = IPAddress.Parse(Console.ReadLine().Trim());
                     Console.Write("Введите порт: ");
                     port = int.Parse(Console.ReadLine().Trim());
+
+                    if (port < 0 || port > 65535)
+                    {
+                        throw new FormatException();
+                    }
+
+                    TcpListener listener = new(ipAddress, port);
+                    listener.Start();
+                    listener.Stop();
                     break;
                 }
                 catch (SocketException)
@@ -169,6 +226,7 @@ internal class Program
                 {
                     Console.WriteLine();
                     Console.WriteLine();
+                    //Console.Clear();
                 }
             }
         }

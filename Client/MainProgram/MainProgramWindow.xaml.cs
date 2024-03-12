@@ -1,5 +1,6 @@
 ﻿using Client.RegistrationAndAuthorization;
 using Ml_Start.ConfigurationLibrary;
+using System.ComponentModel;
 using System.IO;
 using System.Net.Sockets;
 using System.Reflection.PortableExecutable;
@@ -18,13 +19,13 @@ namespace Client
     {
         GreetingWindow GreetingWindow;
         TcpClient Client;
-        string Delay;
 
         public MainProgramWindow(ConnectionWindow window, GreetingWindow greetingWindow)
         {
             InitializeComponent();
             GreetingWindow = greetingWindow;
             Client = window.client;
+            App.Current.Resources["Delay"] = CongfigTools.GetVariableFromXml("Delay");
         }
           
         private void Start_Story_Click(object sender, RoutedEventArgs e)
@@ -53,12 +54,14 @@ namespace Client
 
         public void GetStory()
         {
+            
+
             StreamReader reader = new StreamReader(Client.GetStream());
             StreamWriter writer = new StreamWriter(Client.GetStream());
             writer.AutoFlush = true;
 
             string line = "";
-            Delay = CongfigTools.GetVariableFromXml("Delay");
+            
             //btStartStory.IsEnabled = false;
             EnableAndDisableButton(true);
 
@@ -80,7 +83,7 @@ namespace Client
                         storyText.Text = line;
                     });
 
-                    writer.WriteLine(Delay);
+                    writer.WriteLine(App.Current.Resources["Delay"]);
                 }
                 catch (Exception ex)
                 {
@@ -89,8 +92,8 @@ namespace Client
                 }
             }
 
-            reader.Close();
-            writer.Close();
+            //reader.Close();
+            //writer.Close();
         }
 
         private void Disconnect(Exception ex)
@@ -99,7 +102,7 @@ namespace Client
             {
                 Client.Close();
                 tbConnect.Text = "Соединение потеряно";
-                MessageBoxResult res = MessageBox.Show("Вернуться на страницу подключения?", "", MessageBoxButton.OKCancel);
+                MessageBoxResult res = MessageBox.Show("Произошла ошибка!\nВернуться на страницу подключения?", "", MessageBoxButton.OKCancel);
 
                 if (res == MessageBoxResult.Cancel)
                 {
@@ -134,6 +137,38 @@ namespace Client
                     btStartStory.IsEnabled = true;
                 }
             });
+
+            
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            StreamWriter writer = new StreamWriter(Client.GetStream());
+            writer.AutoFlush = true;
+
+            MessageBoxResult msgBoxResult = MessageBox.Show("Do you really want to exit?", "Exiting...", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
+
+            if (msgBoxResult == MessageBoxResult.Yes)
+            {
+                
+                writer.WriteLine("Close");
+                Client.Close();
+                //Close();
+                e.Cancel = false;
+                //return;
+            }
+            else
+            {
+                e.Cancel = true;
+            }
+
+            //MessageBoxResult res = MessageBox.Show("Точно выходишь?", "", MessageBoxButton.OKCancel);
+            //if (res == MessageBoxResult.OK)
+            //{
+            //    writer.WriteLine("close");
+            //    Client.Close();
+            //    Close();
+            //}
 
             
         }

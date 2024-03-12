@@ -28,11 +28,15 @@
                        Margin="0, 0, 0, 20"/>
                 <Grid Margin="40, 0, 30, 20">
                     <TextBox x:Name="textBoxIp"
+                             MaxLength="15"
+                             TextAlignment="Center"
                              Text="127.0.0.1"
                              HorizontalAlignment="Left"
                              materialDesign:HintAssist.Hint="Введите IP"
                              Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
                     <TextBox x:Name="textBoxPort"
+                             TextAlignment="Center"
+                             MaxLength="5"
                              Text="8080"
                              HorizontalAlignment="Right"
                              materialDesign:HintAssist.Hint="Введите Port" 

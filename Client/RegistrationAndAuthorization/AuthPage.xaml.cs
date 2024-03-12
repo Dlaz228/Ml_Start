@@ -25,7 +25,6 @@ namespace Client
             Client = window.client;
             Window = window;
             GreetingWindow = greetingWindow;
-
         }
 
         private void Button_Auth_Click(object sender, RoutedEventArgs e)
@@ -45,22 +44,26 @@ namespace Client
 
                 string isAuth = reader.ReadLine();
 
-                if (isAuth.Equals("True"))
+                if (isAuth.Equals("true"))
                 {
                     MainProgramWindow mainProgramWindow = new MainProgramWindow(Window, GreetingWindow);
                     mainProgramWindow.Show();
 
                     GreetingWindow.Close();
                 }
+                else if (isAuth.Equals("taken"))
+                {
+                    MessageBox.Show($"Пользователь уже авторизован");
+                }
                 else
                 {
-                    MessageBox.Show($"Пользователь под этим именем уже авторизован");
+                    MessageBox.Show($"Ошибка подключения");
                 }
             }
             catch (Exception ex)
             {
                 tbConnect.Text = "Соединение потеряно";
-                MessageBoxResult res = MessageBox.Show("Вернуться на страницу подключения?");
+                MessageBoxResult res = MessageBox.Show("Произошла ошибка!\nВернуться на страницу подключения?");
                 LoggingTools.WriteLog("Error", ex.Message);
                 if (res == MessageBoxResult.OK)
                 {
