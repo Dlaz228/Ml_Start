@@ -1,17 +1,14 @@
 ﻿using Ml_Start.ConfigurationLibrary;
-using Serilog;
 using Server.MlStartDB;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Sockets;
+using static Server.HelpingFunctions;
+
 
 namespace Server
 {
     internal class DBRegistration
     {
-        public static void UserRegistration(string login, string password)
+        public static void UserRegistration(string login, string password, TcpClient client)
         {
             //Console.WriteLine(login);
             //Console.WriteLine(password);
@@ -23,13 +20,13 @@ namespace Server
 
                 context.SaveChanges();
 
-                Console.WriteLine($"Пользователь {login} был зарегестрирован");
-                LoggingTools.WriteLog("Information", $"Пользователь {login} был зарегестрирован");
+                WriteToConsole($"Пользователь {login}({client.Client.RemoteEndPoint}) был зарегестрирован");
+                LoggingTools.WriteLog("Information", $"Пользователь {login}({client.Client.RemoteEndPoint}) был зарегестрирован");
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine("Ошибка регистрации");
-                LoggingTools.WriteLog("Warning", e.Message);
+                WriteToConsole($"Ошибка регистрации клиента(({client.Client.RemoteEndPoint}))");
+                LoggingTools.WriteLog("Warning", $"Ошибка регистрации клиента(({client.Client.RemoteEndPoint}))", ex);
             }
         }
     }

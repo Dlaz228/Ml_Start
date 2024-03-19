@@ -1,21 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Windows.Navigation;
-using MaterialDesignThemes.Wpf;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Ml_Start.ConfigurationLibrary;
 
 namespace Client.RegistrationAndAuthorization
@@ -32,6 +17,7 @@ namespace Client.RegistrationAndAuthorization
             InitializeComponent();
             LoggingTools.CreateLogger();
             CongfigTools.CreateClientConfigXmlFile();
+            App.Current.Resources["isUserExit"] = true;
         }
 
         private void Button_Connect_Click(object sender, RoutedEventArgs e)
@@ -43,6 +29,7 @@ namespace Client.RegistrationAndAuthorization
                     IPAddress ip_address = IPAddress.Parse(textBoxIp.Text); //default
                     int port = int.Parse(textBoxPort.Text);
                     client = new TcpClient(ip_address.ToString(), port);
+                    LoggingTools.WriteLog("Debug", "Новый клиент присоединился к серверу");
 
                     GreetingWindow greetingWindow = new GreetingWindow(this);
                     greetingWindow.Show();
@@ -51,8 +38,8 @@ namespace Client.RegistrationAndAuthorization
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message); 
-                LoggingTools.WriteLog("Error", ex.Message);
+                MessageBox.Show("Произошла ошибка при присоединении к серверу"); 
+                LoggingTools.WriteLog("Error", "Произошла ошибка при присоединении к серверу", ex);
             }
             
             //App.Current.Resources["client"] = client;

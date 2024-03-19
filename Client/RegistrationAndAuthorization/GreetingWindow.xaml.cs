@@ -1,9 +1,9 @@
 ﻿using Client.RegistrationAndAuthorization;
-using MaterialDesignThemes.Wpf;
-using System.Net;
+using Ml_Start.ConfigurationLibrary;
+using System.ComponentModel;
+using System.IO;
 using System.Net.Sockets;
 using System.Windows;
-using System.Windows.Navigation;
 
 
 namespace Client
@@ -51,12 +51,32 @@ namespace Client
         //    //Client.client = client;
         //}
 
-        public void CloseWindow()
+        private void Window_Closing(object sender, CancelEventArgs e)
         {
-            Client.Close();
-            Close();
+            if ((bool)App.Current.Resources["isUserExit"])
+            {
+                StreamWriter writer = new StreamWriter(Client.GetStream());
+                writer.AutoFlush = true;
+
+                MessageBoxResult msgBoxResult = MessageBox.Show("Do you really want to exit?", "Exiting...", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
+
+                if (msgBoxResult == MessageBoxResult.Yes)
+                {
+                    LoggingTools.WriteLog("Information", $"Пользователь закрыл программу");
+                    writer.WriteLine("Close");
+
+                    Client.Close();
+                    //writer.WriteLine("Close");
+                    //Client.Close();
+                    //this.Close();
+                    //e.Cancel = false;
+                    //return;
+                }
+                else
+                {
+                    e.Cancel = true;
+                }
+            }
         }
-
-
     }
 }

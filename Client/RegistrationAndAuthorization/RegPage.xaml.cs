@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
 using System.IO;
 using System.Net.Sockets;
 using Client.RegistrationAndAuthorization;
@@ -21,6 +20,8 @@ namespace Client
             InitializeComponent();
             Client = window.client;
             GreetingWindow = greetingWindow;
+
+            //tbClientIP.Text = Client.Client.AddressFamily;
         }
 
         private void Button_Reg_Click(object sender, RoutedEventArgs e)
@@ -47,12 +48,12 @@ namespace Client
                 {
                     tbConnect.Text = "Соединение потеряно";
                     MessageBoxResult res = MessageBox.Show("Произошла ошибка!\nВернуться на страницу подключения?");
-                    LoggingTools.WriteLog("Error", ex.Message);
+                    LoggingTools.WriteLog("Error", "Ошибка регистрации", ex);
                     if (res == MessageBoxResult.OK)
                     {
                         ConnectionWindow connectionWindow = new ConnectionWindow();
                         connectionWindow.Show();
-
+                        App.Current.Resources["isUserExit"] = false;
                         GreetingWindow.Close();
                     }
                 }

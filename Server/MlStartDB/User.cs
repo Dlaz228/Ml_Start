@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Server.MlStartDB;
+﻿namespace Server.MlStartDB;
 
 public partial class User
 {

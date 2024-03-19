@@ -1,18 +1,61 @@
-﻿using System.Net.NetworkInformation;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Net;
 using Ml_Start.ConfigurationLibrary;
 using Ml_Start.GenerateSomeNumber;
 using Ml_Start.MakeStory;
 using Server;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Data.SqlClient;
-using Server.MlStartDB;
+using static Server.HelpingFunctions;
 
 internal class Program
 {
     static List<string> users = new();
 
+    public static void Main()
+    {
+        TcpListener listener = null;
+        IPAddress defaultIpAddress = IPAddress.Parse("127.0.0.1"); //"127.0.0.1"
+        int defaultPort = 8080; //8080
+
+        try
+        {
+            CongfigTools.CreateServerConfigXmlFile();
+            LoggingTools.CreateLogger();
+
+            CreateDataBase();
+
+            GetCustomIpAndPort(ref defaultIpAddress, ref defaultPort);
+
+            Console.Clear();
+            //ShowServerNetworkConfig();
+            listener = new(defaultIpAddress, defaultPort);
+            listener.Start();
+            WriteToConsole("MultiIPEchoServer started...");
+            WriteToConsole($"IP => {defaultIpAddress}; Port => {defaultPort}");
+            LoggingTools.WriteLog("Information", "Server has started");
+            WriteToConsole("Waiting for incoming client connections...");
+            while (true)
+            {
+                TcpClient client = listener.AcceptTcpClient();
+                WriteToConsole($"Accepted new client({client.Client.RemoteEndPoint}) connection...");
+                LoggingTools.WriteLog("Information", $"Accepted new client({client.Client.RemoteEndPoint}) connection...");
+                Thread t = new(ProcessClientRequests);
+                t.Start(client);
+            }
+        }
+        catch (Exception ex)
+        {
+            WriteToConsole("Произошла ошибка");
+            LoggingTools.WriteLog("Error", "Произошла ошибка на сервере", ex);
+        }
+        finally
+        {
+            if (listener != null)
+            {
+                listener.Stop();
+                LoggingTools.WriteLog("Information", "Сервер закрыт");
+            }
+        }
+    }
     private async static void ProcessClientRequests(object argument)
     {
         TcpClient client = (TcpClient)argument;
@@ -33,21 +76,20 @@ internal class Program
 
             while (true)
             {
-                string ans = reader.ReadLine();
+                string clientMessage = reader.ReadLine();
+                //WriteToConsole($"Message from {name}({client.Client.RemoteEndPoint}) -> {clientMessage}");
 
-                //Console.WriteLine(ans);
-
-                if (ans.Equals("Reg"))
+                if (clientMessage.Equals("Reg"))
                 {
                     string login = reader.ReadLine();
                     string password = reader.ReadLine();
-                    DBRegistration.UserRegistration(login, password);
+                    DBRegistration.UserRegistration(login, password, client);
                 }
-                else if (ans.Equals("Auth"))
+                else if (clientMessage.Equals("Auth"))
                 {
                     string login = reader.ReadLine();
                     string password = reader.ReadLine();
-                    string isAuth = DBAuthorization.UserAuthorization(login, password, users, ref name);
+                    string isAuth = DBAuthorization.UserAuthorization(login, password, users, client, ref name);
 
                     if (isAuth.Equals("true") && !users.Contains(login))
                     {
@@ -56,69 +98,52 @@ internal class Program
 
                     writer.WriteLine(isAuth);
                 }
-                else if (ans.Equals("Story"))
+                else if (clientMessage.Equals("Story"))
                 {
-                    while (!ans.Equals("close"))
+                    while (!clientMessage.Equals("close"))
                     {
-                        int N = int.Parse(reader.ReadLine());
-                        int L = int.Parse(reader.ReadLine());
+                        int N = reader.ReadLine().Length;
+                        Console.WriteLine(N);
+                        int L = reader.ReadLine().Length;
+                        Console.WriteLine(L);
 
                         foreach (string line in story.GetStory(someNumber.GetNumber(N, L)))
                         {
-                            Console.WriteLine($"From {name} -> " + line);
+                            WriteToConsole($"For {name}({client.Client.RemoteEndPoint}) -> " + line);
                             writer.WriteLine(line);
-                            //writer.Flush();
 
-                            int delay = int.Parse(reader.ReadLine());
-                            //Console.WriteLine(delay);
+                            clientMessage = reader.ReadLine();
+                            int delay = int.Parse(clientMessage);
+                            WriteToConsole($"Delay from client({client.Client.RemoteEndPoint}) -> {delay}");
 
                             await Task.Delay(delay);
-
-                            //Thread.Sleep(int.Parse(Tools.GetVariableFromXml("Delay")));
                         }
 
                         writer.WriteLine("stop");
-                        ans = reader.ReadLine();
+                        clientMessage = reader.ReadLine();
+                        //Console.WriteLine(clientMessage);
+                        int delayForNextDay = int.Parse(clientMessage);
+                        Console.WriteLine(delayForNextDay);
 
-                        if (ans.Equals("Close"))
-                        {
-                            users.Remove(name);
-
-                            reader.Close();
-                            writer.Close();
-                            client.Close();
-                            Console.WriteLine($"Client {name} connection closed!");
-                        }
-
-                        //Console.WriteLine(ans);
-                        //break;
+                        await Task.Delay(delayForNextDay);
                     }
-
-                    break;
                 }
-                else if (ans.Equals("Close"))
-                {
-                    users.Remove(name);
-
-                    reader.Close();
-                    writer.Close();
-                    client.Close();
-                    Console.WriteLine($"Client {name} connection closed!");
-                    break;
-                }
-                //else
-                //{
-                //    LoggingTools.WriteLog("Warning", ans);
-                //}
-
             }
-            
+
         }
         catch (IOException)
         {
-            users.Remove(name);
-
-            Console.WriteLine($"Problem with client {name} communication. Exiting thread.");
+            Disconnect(name, client);
+        }
+        catch (NullReferenceException)
+        {
+            Disconnect(name, client);
+        }
+        catch (Exception ex)
+        {
+            WriteToConsole("Произошла необработанная ошибка сервера.");
+            Console.WriteLine(ex);
+            LoggingTools.WriteLog("Error", "Произошла необработанная ошибка сервера.", ex);
         }
         finally
         {
@@ -129,106 +154,15 @@ internal class Program
         }
     }
 
-    public static void Main()
+    private static void Disconnect(string name, TcpClient client)
     {
-        TcpListener listener = null;
-        IPAddress defaultIpAddress = IPAddress.Parse("127.0.0.1"); //"127.0.0.1"
-        int defaultPort = 8080; 
+        users.Remove(name);
 
-        CongfigTools.CreateServerConfigXmlFile();
+        WriteToConsole($"Client {name}({client.Client.RemoteEndPoint}) connection closed!");
+        LoggingTools.WriteLog("Information", $"Client {name}({client.Client.RemoteEndPoint}) connection closed!");
 
-        try
-        {
-            var context = new MlStartDbContext();
-            
-            if (context.Database.EnsureCreated())
-            {
-                Console.WriteLine("База данных создана");
-                LoggingTools.WriteLog("Debug", "База данных создана");
-            }
-
-            LoggingTools.CreateLogger();
-
-            GetCustomIpAndPort(ref defaultIpAddress, ref defaultPort);
-
-            Console.Clear();
-            //ShowServerNetworkConfig();
-            listener = new(defaultIpAddress, defaultPort);
-            listener.Start();
-            Console.WriteLine("MultiIPEchoServer started...");
-            Console.WriteLine($"IP => {defaultIpAddress}; Port => {defaultPort}");
-            LoggingTools.WriteLog("Information", "Server has started");
-            Console.WriteLine("Waiting for incoming client connections...");
-            while (true)
-            {
-                TcpClient client = listener.AcceptTcpClient();
-                Console.WriteLine("Accepted new client connection...");
-                LoggingTools.WriteLog("Information", "Accepted new client connection...");
-                Thread t = new(ProcessClientRequests);
-                t.Start(client);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Произошла ошибка");
-            LoggingTools.WriteLog("Error", ex.Message + ex.StackTrace);
-        }
-        finally
-        {
-            if (listener != null)
-            {
-                listener.Stop();
-                LoggingTools.WriteLog("Information", "Сервер закрыт");
-            }
-        }
+        client.Close();
     }
 
-    private static void GetCustomIpAndPort(ref IPAddress ipAddress, ref int port)
-    {
-        string ans = "";
-
-        while (!ans.Equals("Y") && !ans.Equals("N"))
-        {
-            Console.Write("Хотите использовать свой ip и port для сервера? Y/N: ");
-            ans = Console.ReadLine().Trim().ToUpper();
-        }
-
-        if (ans.Equals("Y"))
-        {
-            while (true)
-            {
-                try
-                {
-                    Console.Write("Введите IP-адресс: ");
-                    ipAddress = IPAddress.Parse(Console.ReadLine().Trim());
-                    Console.Write("Введите порт: ");
-                    port = int.Parse(Console.ReadLine().Trim());
-
-                    if (port < 0 || port > 65535)
-                    {
-                        throw new FormatException();
-                    }
-
-                    TcpListener listener = new(ipAddress, port);
-                    listener.Start();
-                    listener.Stop();
-                    break;
-                }
-                catch (SocketException)
-                {
-                    Console.WriteLine("Недопустимый IP-адрес");
-                }
-                catch (FormatException)
-                {
-                    Console.WriteLine("Недопустимый порт");
-                }
-                finally
-                {
-                    Console.WriteLine();
-                    Console.WriteLine();
-                    //Console.Clear();
-                }
-            }
-        }
-    }
+    
 }

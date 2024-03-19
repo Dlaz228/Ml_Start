@@ -1,5 +1,6 @@
 ﻿using Serilog;
 using Serilog.Events;
+using System.Diagnostics;
 
 namespace Ml_Start.ConfigurationLibrary;
 
@@ -29,7 +30,7 @@ public class LoggingTools
         Log.Logger = loggerConfig.CreateLogger();
     }
 
-    public static void WriteLog(string logType, string message)
+    public static void WriteLog(string logType, string message, Exception? ex = null)
     {
         switch (logType)
         {
@@ -37,13 +38,20 @@ public class LoggingTools
                 Log.Information(message);
                 return;
             case "Warning":
-                Log.Warning(message);
+                if (ex != null)
+                {
+                    Log.Warning($"{message}; Sourse: {ex.Source}; warning message: '{ex.Message}'; Where:{ex.StackTrace.Split('\n').Last()}");
+                }
+                else
+                {
+                    Log.Warning(message);
+                }
                 return;
             case "Debug":
                 Log.Debug(message);
                 return;
             case "Error":
-                Log.Error(message);
+                Log.Error($"{message}; Sourse: {ex.Source}; error message: '{ex.Message}'; Where:{ex.StackTrace.Split('\n').Last()}");
                 return;
         }
     }

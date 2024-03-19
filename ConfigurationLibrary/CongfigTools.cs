@@ -15,7 +15,7 @@ public class CongfigTools
         {
             XDocument xdoc = new XDocument(
             new XElement("ConfigSettings",
-                new XElement("ConnectionString", "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MlStartDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False")
+                new XElement("ConnectionString", "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MlStartDB;Integrated Security=True")
                 )
             );
 
@@ -37,7 +37,8 @@ public class CongfigTools
             new XElement("ConfigSettings",
                 new XElement("FirstName", "Даниил"),
                 new XElement("LastName", "Лазукин"),
-                new XElement("Delay", "5000")
+                new XElement("Delay", "1000"),
+                new XElement("DelayForNextDay", "5000")
                 )
             );
 

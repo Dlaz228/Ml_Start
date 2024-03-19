@@ -1,12 +1,9 @@
 ﻿using Client.RegistrationAndAuthorization;
-using MaterialDesignThemes.Wpf;
 using Ml_Start.ConfigurationLibrary;
-using System.Data;
 using System.IO;
 using System.Net.Sockets;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
 
 namespace Client
 {
@@ -25,6 +22,8 @@ namespace Client
             Client = window.client;
             Window = window;
             GreetingWindow = greetingWindow;
+
+            //tbClientIP.Text = Client.Client.LocalEndPoint.ToString();
         }
 
         private void Button_Auth_Click(object sender, RoutedEventArgs e)
@@ -46,30 +45,35 @@ namespace Client
 
                 if (isAuth.Equals("true"))
                 {
+                    LoggingTools.WriteLog("Information", $"{login} авторизовался");
                     MainProgramWindow mainProgramWindow = new MainProgramWindow(Window, GreetingWindow);
                     mainProgramWindow.Show();
 
+                    App.Current.Resources["isUserExit"] = false;
                     GreetingWindow.Close();
+                    App.Current.Resources["isUserExit"] = true;
                 }
                 else if (isAuth.Equals("taken"))
                 {
-                    MessageBox.Show($"Пользователь уже авторизован");
+                    MessageBox.Show($"Пользователь под таким именем уже авторизован");
+                    LoggingTools.WriteLog("Debug", $"Пользователь {login} уже авторизован");
                 }
                 else
                 {
-                    MessageBox.Show($"Ошибка подключения");
+                    MessageBox.Show($"Пользователь не найден.\nПопробуйте зарегестрироваться");
+                    LoggingTools.WriteLog("Debug", $"Пользователь {login} не найден");
                 }
             }
             catch (Exception ex)
             {
                 tbConnect.Text = "Соединение потеряно";
                 MessageBoxResult res = MessageBox.Show("Произошла ошибка!\nВернуться на страницу подключения?");
-                LoggingTools.WriteLog("Error", ex.Message);
+                LoggingTools.WriteLog("Error", "Произошла ошибка при авторизации", ex);
                 if (res == MessageBoxResult.OK)
                 {
                     ConnectionWindow connectionWindow = new ConnectionWindow();
                     connectionWindow.Show();
-
+                    App.Current.Resources["isUserExit"] = false;
                     GreetingWindow.Close();
                 }
             }

@@ -1,16 +1,13 @@
 ﻿using Server.MlStartDB;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Ml_Start.ConfigurationLibrary;
+using static Server.HelpingFunctions;
+using System.Net.Sockets;
 
 namespace Server
 {
     internal class DBAuthorization
     {
-        public static string UserAuthorization(string login, string password, List<string> users, ref string name)
+        public static string UserAuthorization(string login, string password, List<string> users, TcpClient client, ref string name)
         {
             try
             {
@@ -22,28 +19,28 @@ namespace Server
 
                 if (user != null && users.Contains(login))
                 {
-                    Console.WriteLine($"Пользователь {login} уже авторизован");
+                    WriteToConsole($"Пользователь {login}({client.Client.RemoteEndPoint}) уже авторизован");
                     return "taken";
                 }
                 if (user != null)
                 {
                     name = login;
                     //users.Add(name);
-                    Console.WriteLine($"Пользователь {login} авторизовался");
-                    LoggingTools.WriteLog("Information", $"Пользователь {login} авторизовался");
+                    WriteToConsole($"Пользователь {login}({client.Client.RemoteEndPoint}) авторизовался");
+                    LoggingTools.WriteLog("Information", $"Пользователь {login}({client.Client.RemoteEndPoint}) авторизовался");
                     return "true";
                 }
                 else
                 {
-                    Console.WriteLine("Не удалось найти пользователя");
-                    LoggingTools.WriteLog("Information", "Не удалось найти пользователя");
+                    WriteToConsole($"Не удалось найти пользователя {login}({client.Client.RemoteEndPoint})");
+                    LoggingTools.WriteLog("Information", $"Не удалось найти пользователя {login}({client.Client.RemoteEndPoint})");
                     return "false";
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine($"Ошибка авторизации");
-                LoggingTools.WriteLog("Warning", e.Message);
+                WriteToConsole($"Ошибка авторизации клиента({client.Client.RemoteEndPoint})");
+                LoggingTools.WriteLog("Warning", $"Ошибка авторизации клиента({client.Client.RemoteEndPoint})", ex);
                 return "false";
             }
             
