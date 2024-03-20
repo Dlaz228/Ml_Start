@@ -13,15 +13,13 @@ namespace Client
     public partial class AuthPage : Page
     {
         TcpClient Client;
-        ConnectionWindow Window;
         GreetingWindow GreetingWindow;
 
-        public AuthPage(ConnectionWindow window, GreetingWindow greetingWindow)
+        public AuthPage(GreetingWindow greetingWindow)
         {
             InitializeComponent();
-            Client = window.client;
-            Window = window;
             GreetingWindow = greetingWindow;
+            Client = (TcpClient)App.Current.Resources["Client"];
 
             //tbClientIP.Text = Client.Client.LocalEndPoint.ToString();
         }
@@ -45,8 +43,9 @@ namespace Client
 
                 if (isAuth.Equals("true"))
                 {
+                    App.Current.Resources["UserName"] = login;
                     LoggingTools.WriteLog("Information", $"{login} авторизовался");
-                    MainProgramWindow mainProgramWindow = new MainProgramWindow(Window, GreetingWindow);
+                    MainProgramWindow mainProgramWindow = new MainProgramWindow();
                     mainProgramWindow.Show();
 
                     App.Current.Resources["isUserExit"] = false;
@@ -77,49 +76,11 @@ namespace Client
                     GreetingWindow.Close();
                 }
             }
-
-            ////var context = new TestBdContext();
-
-            ////var user = context.Users.
-            ////           Where(user => user.Login == loginUser && user.Password == Hasher.Hash(passwordUser)).
-            ////           FirstOrDefault();
-
-            //if (user != null)
-            //{
-            //    MessageBox.Show($"Успешно");
-
-            //    //Content = null;
-
-
-
-            //    //MainWindow mainWindow = new();
-            //    //mainWindow.Close();
-            //    //NavigationService.Navigate(null);
-            //    //NavigationService.Navigate(null);
-            //    MainProgramWindow mainProgramWindow = new();
-            //    mainProgramWindow.Show();
-
-            //    Application.Current.MainWindow.Close();
-
-
-            //    //mainProgram.Show();
-            //}
-            //else
-            //{
-            //    MessageBox.Show("Не то...");
-            //}
-        }
-
-        private void Button_Page_Reg_Click(object sender, RoutedEventArgs e)
-        {
-            //NavigationService.Navigate(new RegPage());
         }
 
         private void Button_Back_To_Greeting_Click(object sender, RoutedEventArgs e)
         {
             Content = null;
-            //NavigationService.NavigateBack();
-            //NavigationService.Navigate(new AuthPage());
         }
     }
 }

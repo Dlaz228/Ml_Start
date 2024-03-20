@@ -15,28 +15,25 @@ namespace Client
 
     public partial class MainProgramWindow : Window
     {
-        GreetingWindow GreetingWindow;
         TcpClient Client;
-        Thread t;
-        //bool isExit;
 
-        public MainProgramWindow(ConnectionWindow window, GreetingWindow greetingWindow)
+        public MainProgramWindow()
         {
             InitializeComponent();
-            GreetingWindow = greetingWindow;
-            Client = window.client;
 
             App.Current.Resources["Delay"] = CongfigTools.GetVariableFromXml("Delay");
             App.Current.Resources["DelayForNextDay"] = CongfigTools.GetVariableFromXml("DelayForNextDay");
             App.Current.Resources["N"] = CongfigTools.GetVariableFromXml("FirstName");
             App.Current.Resources["L"] = CongfigTools.GetVariableFromXml("LastName");
 
-            //tbClientIP.Text = Client.Client.RemoteEndPoint.ToString();
+            Client = (TcpClient)App.Current.Resources["Client"];
+
+            tbUserName.Text = $"Здарова, {App.Current.Resources["UserName"]}";
+
         }
-          
         private void Start_Story_Click(object sender, RoutedEventArgs e)
         {
-            //int N, L;
+        //int N, L;
             try
             {
                 StreamWriter writer = new StreamWriter(Client.GetStream());
@@ -48,7 +45,7 @@ namespace Client
                 //writer.WriteLine(N);
                 //writer.WriteLine(L);
 
-                t = new Thread(GetStory);
+                Thread t = new Thread(GetStory);
                 t.Start();
             }
             catch (Exception ex)
@@ -105,9 +102,13 @@ namespace Client
             }
             catch (Exception ex)
             {
-                LoggingTools.WriteLog("Error", $"Произошла ошибка при получении истории", ex);
-                App.Current.Resources["isUserExit"] = false;
-                Disconnect();
+                if ((bool)App.Current.Resources["isUserExit"])
+                {
+                    LoggingTools.WriteLog("Error", $"Произошла ошибка при получении истории", ex);
+                    App.Current.Resources["isUserExit"] = false;
+                    Disconnect();
+                }
+                
             }
 
             //reader.Close();
@@ -140,8 +141,9 @@ namespace Client
             {
                 Client.Close();
                 LoggingTools.WriteLog("Information", $"Пользователь закрыл программу");
-                
+                App.Current.Resources["isUserExit"] = false;
                 this.Close();
+                
             }
             else
             {
@@ -199,18 +201,12 @@ namespace Client
         {
             if ((bool)App.Current.Resources["isUserExit"])
             {
-                StreamWriter writer = new StreamWriter(Client.GetStream());
-                writer.AutoFlush = true;
-
                 MessageBoxResult msgBoxResult = MessageBox.Show("Do you really want to exit?", "Exiting...", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
 
                 if (msgBoxResult == MessageBoxResult.Yes)
                 {
                     //isExit = true;
                     Disconnect();
-                    //writer.WriteLine("Close");
-                    //Client.Close();
-                    //this.Close();
                     //e.Cancel = false;
                     //return;
                 }

@@ -15,7 +15,6 @@ internal class Program
         TcpListener listener = null;
         IPAddress defaultIpAddress = IPAddress.Parse("127.0.0.1"); //"127.0.0.1"
         int defaultPort = 8080; //8080
-
         try
         {
             CongfigTools.CreateServerConfigXmlFile();

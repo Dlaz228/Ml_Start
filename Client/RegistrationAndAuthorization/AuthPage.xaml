@@ -47,7 +47,6 @@
                             Content="Обратно" />
                     <Button HorizontalAlignment="Right" 
                             Content="Авторизация" 
-                            Click="Button_Page_Reg_Click"
                             Style="{StaticResource MaterialDesignFlatButton}"/>
                 </Grid>
                 <TextBox x:Name="textBoxLogin"

@@ -30,8 +30,8 @@ namespace Client.RegistrationAndAuthorization
                     int port = int.Parse(textBoxPort.Text);
                     client = new TcpClient(ip_address.ToString(), port);
                     LoggingTools.WriteLog("Debug", "Новый клиент присоединился к серверу");
-
-                    GreetingWindow greetingWindow = new GreetingWindow(this);
+                    App.Current.Resources["Client"] = client;
+                    GreetingWindow greetingWindow = new GreetingWindow();
                     greetingWindow.Show();
                     Close();
                 }

@@ -14,18 +14,16 @@ namespace Client
     public partial class GreetingWindow : Window
     {
         TcpClient Client;
-        ConnectionWindow Window;
+        //ConnectionWindow Window;
 
-        public GreetingWindow(ConnectionWindow window)
+        public GreetingWindow()
         {
             InitializeComponent();
-            Window = window;
-            Client = window.client;
         }
 
         private void Button_Window_Reg_Click(object sender, RoutedEventArgs e)
         {
-            Greeting.Navigate(new RegPage(Window, this));
+            Greeting.Navigate(new RegPage(this));
             //RegPage regPage = new RegPage(Window);
 
             //new RegPage(Window).ShowDialog(this);
@@ -36,7 +34,7 @@ namespace Client
 
         private void Button_Window_Auth_Click(object sender, RoutedEventArgs e)
         {
-            Greeting.Navigate(new AuthPage(Window, this));
+            Greeting.Navigate(new AuthPage(this));
 
             //Greeting.Content = new AuthPage(Window, this);
         }
@@ -55,22 +53,14 @@ namespace Client
         {
             if ((bool)App.Current.Resources["isUserExit"])
             {
-                StreamWriter writer = new StreamWriter(Client.GetStream());
-                writer.AutoFlush = true;
-
                 MessageBoxResult msgBoxResult = MessageBox.Show("Do you really want to exit?", "Exiting...", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
 
                 if (msgBoxResult == MessageBoxResult.Yes)
                 {
-                    LoggingTools.WriteLog("Information", $"Пользователь закрыл программу");
-                    writer.WriteLine("Close");
-
                     Client.Close();
-                    //writer.WriteLine("Close");
-                    //Client.Close();
-                    //this.Close();
-                    //e.Cancel = false;
-                    //return;
+                    LoggingTools.WriteLog("Information", $"Пользователь закрыл программу");
+
+                    e.Cancel = false;
                 }
                 else
                 {

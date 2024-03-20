@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Sockets;
 using Client.RegistrationAndAuthorization;
 using Ml_Start.ConfigurationLibrary;
+using System.ComponentModel;
 
 namespace Client
 {
@@ -15,13 +16,11 @@ namespace Client
         TcpClient Client;
         GreetingWindow GreetingWindow;
 
-        public RegPage(ConnectionWindow window, GreetingWindow greetingWindow)
+        public RegPage(GreetingWindow greetingWindow)
         {
             InitializeComponent();
-            Client = window.client;
             GreetingWindow = greetingWindow;
-
-            //tbClientIP.Text = Client.Client.AddressFamily;
+            Client = (TcpClient)App.Current.Resources["Client"];
         }
 
         private void Button_Reg_Click(object sender, RoutedEventArgs e)

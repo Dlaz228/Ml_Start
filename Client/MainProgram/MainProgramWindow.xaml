@@ -40,7 +40,8 @@
                            FontSize="11"
                            FontWeight="Bold" 
                                 Margin="0, 0, 0, 20"/>
-                <TextBlock Text="Здарова" 
+                <TextBlock x:Name="tbUserName"
+                           Text="Здарова" 
                            TextAlignment="Center" 
                            FontSize="30"
                            FontWeight="Bold" 

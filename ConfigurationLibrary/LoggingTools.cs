@@ -8,23 +8,38 @@ public class LoggingTools
 {
     public static void CreateLogger()
     {
-        Dictionary<LogEventLevel, string> levels = new Dictionary<LogEventLevel, string>()
-{
-        { LogEventLevel.Information, "infoLog.txt" },
-        { LogEventLevel.Debug, "debugLog.txt" },
-        { LogEventLevel.Warning, "warningsLog.txt" },
-        { LogEventLevel.Error, "errorsLog.txt" }
-};
+        //Dictionary<LogEventLevel, string> logEventLevels = new Dictionary<LogEventLevel, string>()
+        //{
+        //    { LogEventLevel.Information, "infoLog.txt" },
+        //    { LogEventLevel.Debug, "debugLog.txt" },
+        //    { LogEventLevel.Warning, "warningsLog.txt" },
+        //    { LogEventLevel.Error, "errorsLog.txt" }
+        //};
+        List<LogEventLevel> logEventLevels = new List<LogEventLevel>()
+        {
+            { LogEventLevel.Information},
+            { LogEventLevel.Debug},
+            { LogEventLevel.Warning},
+            { LogEventLevel.Error}
+        };
+
+        string logDirectory = Path.Combine("logs", $"{DateTime.Now:yyyy-MM-dd}");
+        string logName = string.Empty;
 
         LoggerConfiguration loggerConfig = new LoggerConfiguration()
             .MinimumLevel.Verbose();
-
-        foreach (var tmp in levels)
+        
+        foreach (var logEventLevel in logEventLevels)
         {
-            loggerConfig
-                .WriteTo.Logger(c =>
-                    c.Filter.ByIncludingOnly(e => e.Level == tmp.Key)
-                        .WriteTo.File($"Logs/" + tmp.Value));
+            logName = logEventLevel.ToString().ToLower() + "Log";
+            loggerConfig.WriteTo.Logger(lc => lc
+                .Filter.ByIncludingOnly(evt => evt.Level == logEventLevel)
+                .WriteTo.File($@"{logDirectory}\{logName}.txt",
+                rollingInterval: RollingInterval.Day));
+            //loggerConfig
+            //    .WriteTo.Logger(c =>
+            //        c.Filter.ByIncludingOnly(e => e.Level == tmp.Key)
+            //            .WriteTo.File($"logs/" + tmp.Value));
         }
 
         Log.Logger = loggerConfig.CreateLogger();
@@ -54,5 +69,6 @@ public class LoggingTools
                 Log.Error($"{message}; Sourse: {ex.Source}; error message: '{ex.Message}'; Where:{ex.StackTrace.Split('\n').Last()}");
                 return;
         }
+
     }
 }
