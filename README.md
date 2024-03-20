@@ -6,6 +6,6 @@
 3) Файл конфигурации находится по пути: Ml_Start\Server\bin\Debug\net8.0\config.xml<br/>
    Файл конфигурации находится по пути: Ml_Start\Client\bin\Debug\net8.0-windows\Logs
 
-4) Платформа: Windows, WPF, .NET 8.0, БД - SQL Server Management Studio.<br/>
+4) Платформа: Windows, WPF, .NET 8.0, БД - MSSQL Server.<br/>
 
 5) Готовы все 4 этапа(но надо доделать мелочи).
